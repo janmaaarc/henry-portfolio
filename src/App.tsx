@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from 'react'
-import { motion, Variants } from 'framer-motion'
+import { useState, useEffect, useRef, SyntheticEvent } from 'react'
+import { motion, Variants, AnimatePresence } from 'framer-motion'
 import './App.css'
 
 // Data
@@ -14,9 +14,17 @@ const skills = [
 ]
 
 const certifications = [
-  { name: 'IT Specialist in Artificial Intelligence', issuer: 'Certiport', year: '2025' },
-  { name: 'IT Specialist in Networking', issuer: 'Certiport', year: '2024' }
+  { name: 'IT Specialist in Artificial Intelligence', issuer: 'Certiport', year: '2025', description: 'Validated expertise in AI concepts, machine learning, and neural networks' },
+  { name: 'IT Specialist in Networking', issuer: 'Certiport', year: '2024', description: 'Proficiency in network infrastructure, protocols, and security' }
 ]
+
+// Time-based greeting helper
+const getGreeting = () => {
+  const hour = new Date().getHours()
+  if (hour < 12) return 'Good morning'
+  if (hour < 18) return 'Good afternoon'
+  return 'Good evening'
+}
 
 // Animation variants
 const containerVariants: Variants = {
@@ -44,6 +52,113 @@ const scrollVariants: Variants = {
     y: 0,
     transition: { duration: 0.6, ease: [0.33, 1, 0.68, 1] }
   }
+}
+
+// Loading Screen Component
+function LoadingScreen() {
+  return (
+    <motion.div
+      className="loading-screen"
+      initial={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.6, ease: 'easeInOut' }}
+    >
+      <motion.div
+        className="loading-content"
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.4 }}
+      >
+        <div className="loading-logo">
+          <motion.span
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            H
+          </motion.span>
+          <motion.span
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            Z
+          </motion.span>
+        </div>
+        <motion.div
+          className="loading-bar"
+          initial={{ scaleX: 0 }}
+          animate={{ scaleX: 1 }}
+          transition={{ duration: 1, ease: 'easeInOut' }}
+        />
+      </motion.div>
+    </motion.div>
+  )
+}
+
+// Resume Preview Modal Component
+function ResumePreviewModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [isOpen])
+
+  if (!isOpen) return null
+
+  return (
+    <motion.div
+      className="modal-overlay"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      onClick={onClose}
+    >
+      <motion.div
+        className="modal-content"
+        initial={{ opacity: 0, scale: 0.9, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.9, y: 20 }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="modal-header">
+          <h3>Resume Preview</h3>
+          <button className="modal-close" onClick={onClose} aria-label="Close modal">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+        <div className="modal-body">
+          <iframe
+            src="/resume/Henry Rainier C. Zingapan - Briefcase Resume.pdf"
+            title="Resume Preview"
+            className="resume-preview-iframe"
+          />
+        </div>
+        <div className="modal-footer">
+          <a
+            href="/resume/Henry Rainier C. Zingapan - Briefcase Resume.pdf"
+            download
+            className="btn btn-download"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+            Download Resume
+          </a>
+        </div>
+      </motion.div>
+    </motion.div>
+  )
 }
 
 // Custom Cursor Component
@@ -86,8 +201,19 @@ function CustomCursor() {
 // Main App Component
 function App() {
   const [theme, setTheme] = useState<'light' | 'dark'>('light')
+  const [isLoading, setIsLoading] = useState(true)
   const [isLoaded, setIsLoaded] = useState(false)
   const [themeAnnouncement, setThemeAnnouncement] = useState('')
+  const [showScrollHint, setShowScrollHint] = useState(true)
+  const [showResumePreview, setShowResumePreview] = useState(false)
+
+  // Loading effect
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false)
+    }, 1200)
+    return () => clearTimeout(timer)
+  }, [])
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | null
@@ -96,6 +222,15 @@ function App() {
     setTheme(initialTheme)
     document.documentElement.setAttribute('data-theme', initialTheme)
     setIsLoaded(true)
+
+    // Hide scroll hint on scroll
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setShowScrollHint(false)
+      }
+    }
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
   const toggleTheme = () => {
@@ -109,6 +244,10 @@ function App() {
 
   return (
     <>
+      <AnimatePresence>
+        {isLoading && <LoadingScreen />}
+      </AnimatePresence>
+
       <CustomCursor />
       <a href="#main-content" className="skip-link">Skip to main content</a>
 
@@ -160,14 +299,24 @@ function App() {
           animate={isLoaded ? "visible" : "hidden"}
         >
           {/* Profile Card */}
-          <motion.section className="card card-profile" variants={itemVariants}>
+          <motion.section id="profile" className="card card-profile" variants={itemVariants}>
             <div className="profile-left">
               <div className="avatar">
-                <img src="/image/henry-profile.jpg" alt="Henry Rainier Zingapan" loading="lazy" />
+                <img
+                  src="/image/henry-profile.jpg"
+                  alt="Henry Rainier Zingapan"
+                  loading="lazy"
+                  onError={(e: SyntheticEvent<HTMLImageElement>) => {
+                    e.currentTarget.style.display = 'none'
+                    e.currentTarget.parentElement!.innerHTML = '<span class="avatar-fallback">HZ</span>'
+                  }}
+                />
               </div>
               <div className="profile-info">
+                <p className="greeting">{getGreeting()}! I'm</p>
                 <h1>Henry Rainier Zingapan</h1>
                 <p className="role">IT Student | Business Analytics</p>
+                <span className="status-badge">Open to Opportunities</span>
                 <p className="location">Las Piñas City, Philippines</p>
               </div>
             </div>
@@ -176,20 +325,21 @@ function App() {
                 Aspiring IT professional with a passion for data-driven solutions and emerging technologies.
               </p>
               <div className="profile-actions">
-                <a href="/resume/Henry Rainier C. Zingapan - Briefcase Resume.pdf" download className="btn btn-outline clickable">
+                <button onClick={() => setShowResumePreview(true)} className="btn btn-primary clickable">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                    <polyline points="7 10 12 15 17 10" />
-                    <line x1="12" y1="15" x2="12" y2="3" />
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                    <line x1="16" y1="13" x2="8" y2="13" />
+                    <line x1="16" y1="17" x2="8" y2="17" />
                   </svg>
                   Resume
-                </a>
-                <a href="mailto:hczingapan@feualabang.edu.ph" className="email-link clickable" aria-label="Email">
+                </button>
+                <a href="mailto:hczingapan@feualabang.edu.ph" className="btn btn-outline clickable">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
                     <polyline points="22,6 12,13 2,6" />
                   </svg>
-                  <span className="email-text">hczingapan@feualabang.edu.ph</span>
+                  Email
                 </a>
               </div>
               <div className="profile-links">
@@ -237,6 +387,7 @@ function App() {
 
           {/* Skills Card */}
           <motion.section
+            id="skills"
             className="card card-stacks"
             variants={scrollVariants}
             initial="hidden"
@@ -246,9 +397,10 @@ function App() {
             <span className="card-label">Skills</span>
             <div className="skills-list">
               {skills.map((skill, index) => (
-                <div key={skill.name} className="skill-item">
+                <div key={skill.name} className="skill-item" title={`${skill.name}: ${skill.level}% proficiency`}>
                   <div className="skill-header">
                     <span className="skill-name">{skill.name}</span>
+                    <span className="skill-level">{skill.level}%</span>
                   </div>
                   <div className="skill-bar">
                     <motion.div
@@ -266,6 +418,7 @@ function App() {
 
           {/* Education Card */}
           <motion.section
+            id="education"
             className="card card-education"
             variants={scrollVariants}
             initial="hidden"
@@ -290,6 +443,7 @@ function App() {
 
           {/* Certifications Card */}
           <motion.section
+            id="certs"
             className="card card-certs"
             variants={scrollVariants}
             initial="hidden"
@@ -301,7 +455,7 @@ function App() {
               {certifications.map((cert, i) => (
                 <motion.div
                   key={i}
-                  className="cert-item"
+                  className="cert-item has-tooltip"
                   initial={{ opacity: 0, x: -20 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
@@ -309,11 +463,29 @@ function App() {
                 >
                   <span className="cert-name">{cert.name}</span>
                   <span className="cert-meta">{cert.issuer} · {cert.year}</span>
+                  <span className="cert-description-inline">{cert.description}</span>
+                  <span className="tooltip">{cert.description}</span>
                 </motion.div>
               ))}
             </div>
           </motion.section>
         </motion.main>
+
+        {/* Scroll Indicator */}
+        {showScrollHint && (
+          <motion.div
+            className="scroll-indicator"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ delay: 1 }}
+            aria-hidden="true"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M12 5v14M5 12l7 7 7-7" />
+            </svg>
+          </motion.div>
+        )}
 
         {/* Footer */}
         <motion.footer
@@ -326,6 +498,17 @@ function App() {
             <p>&copy; {new Date().getFullYear()} Henry Rainier Zingapan. All rights reserved.</p>
           </div>
         </motion.footer>
+
+        
+        {/* Resume Preview Modal */}
+        <AnimatePresence>
+          {showResumePreview && (
+            <ResumePreviewModal
+              isOpen={showResumePreview}
+              onClose={() => setShowResumePreview(false)}
+            />
+          )}
+        </AnimatePresence>
       </div>
     </>
   )

@@ -5,14 +5,14 @@
 }
 
 :root {
-  --bg-primary: #fafafa;
+  --bg-primary: #f8f7f4;
   --bg-secondary: #ffffff;
-  --bg-tertiary: #f5f5f5;
-  --bg-accent: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  --text-primary: #1a1a1a;
-  --text-secondary: #555555;
-  --text-muted: #888888;
+  --bg-tertiary: #f3f2ef;
+  --bg-accent: linear-gradient(135deg, #1a1a1d 0%, #2d2d32 100%);
+  --bg-gradient: linear-gradient(135deg, #1a1a1d 0%, #2d2d32 100%);
+  --text-primary: #2d2d2d;
+  --text-secondary: #5a5a5a;
+  --text-muted: #767676;
   --text-inverse: #ffffff;
   --accent: #667eea;
   --accent-secondary: #764ba2;
@@ -39,13 +39,13 @@
 }
 
 [data-theme="dark"] {
-  --bg-primary: #0a0a0a;
-  --bg-secondary: #141414;
-  --bg-tertiary: #1a1a1a;
-  --bg-accent: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
-  --text-primary: #f0f0f0;
-  --text-secondary: #b0b0b0;
-  --text-muted: #707070;
+  --bg-primary: #1a1a1d;
+  --bg-secondary: #232326;
+  --bg-tertiary: #2a2a2e;
+  --bg-accent: linear-gradient(135deg, #0d0d0f 0%, #1a1a1d 100%);
+  --text-primary: #e8e8e8;
+  --text-secondary: #a8a8a8;
+  --text-muted: #9a9a9a;
   --text-inverse: #ffffff;
   --accent: #667eea;
   --accent-secondary: #764ba2;
@@ -94,7 +94,7 @@ body {
   position: relative;
 }
 
-/* Gradient mesh background - only visible in dark mode */
+/* Animated gradient mesh background */
 body::after {
   content: '';
   position: fixed;
@@ -105,10 +105,27 @@ body::after {
   pointer-events: none;
   z-index: -1;
   background:
-    radial-gradient(ellipse 80% 50% at 20% -20%, rgba(102, 126, 234, 0.08), transparent),
-    radial-gradient(ellipse 60% 40% at 80% 100%, rgba(118, 75, 162, 0.06), transparent);
+    radial-gradient(ellipse 80% 50% at 20% -20%, rgba(102, 126, 234, 0.12), transparent),
+    radial-gradient(ellipse 60% 40% at 80% 100%, rgba(118, 75, 162, 0.1), transparent),
+    radial-gradient(ellipse 50% 50% at 50% 50%, rgba(102, 126, 234, 0.05), transparent);
   opacity: var(--gradient-mesh-opacity, 0);
   transition: opacity var(--transition-slow);
+  animation: gradientFloat 15s ease-in-out infinite;
+}
+
+@keyframes gradientFloat {
+  0%, 100% {
+    background-position: 0% 0%, 100% 100%, 50% 50%;
+    transform: scale(1);
+  }
+  33% {
+    background-position: 10% 20%, 90% 80%, 60% 40%;
+    transform: scale(1.02);
+  }
+  66% {
+    background-position: -5% 10%, 105% 90%, 40% 60%;
+    transform: scale(0.98);
+  }
 }
 
 /* Noise texture overlay */
