@@ -1,6 +1,6 @@
-# Henry Rainier Zingapan - Portfolio
+# Portfolio Website
 
-A modern, responsive portfolio website for Henry Rainier Zingapan, an IT Student specializing in Business Analytics at FEU Alabang.
+A modern, responsive portfolio website built with React and TypeScript.
 
 ## Features
 
@@ -10,6 +10,8 @@ A modern, responsive portfolio website for Henry Rainier Zingapan, an IT Student
 - Fully responsive design (desktop, tablet, mobile)
 - Accessibility features (ARIA labels, skip links, focus states)
 - Custom cursor effect
+- Loading screen animation
+- Resume preview modal
 - SEO optimized with Open Graph meta tags
 
 ## Tech Stack
@@ -30,12 +32,6 @@ A modern, responsive portfolio website for Henry Rainier Zingapan, an IT Student
 ### Installation
 
 ```bash
-# Clone the repository
-git clone https://github.com/henryzingapan/portfolio.git
-
-# Navigate to project directory
-cd portfolio
-
 # Install dependencies
 npm install
 
@@ -63,6 +59,7 @@ src/
 ├── main.tsx       # Application entry point
 public/
 ├── favicon.svg    # Site favicon
+├── image/         # Profile images
 ├── resume/        # Resume PDF
 index.html         # HTML template with SEO meta tags
 ```
@@ -70,7 +67,3 @@ index.html         # HTML template with SEO meta tags
 ## License
 
 All rights reserved.
-
----
-
-Designed and developed with care.
