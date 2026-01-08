@@ -38,6 +38,7 @@
 /* Portfolio Container */
 .portfolio {
   min-height: 100vh;
+  background: var(--bg-primary);
   transition: background var(--transition-normal);
 }
 
