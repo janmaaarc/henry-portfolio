@@ -163,7 +163,7 @@ function App() {
           <motion.section className="card card-profile" variants={itemVariants}>
             <div className="profile-left">
               <div className="avatar">
-                <img src="/image/Unknown.jpg" alt="Henry Rainier Zingapan" />
+                <img src="/image/henry-profile.jpg" alt="Henry Rainier Zingapan" loading="lazy" />
               </div>
               <div className="profile-info">
                 <h1>Henry Rainier Zingapan</h1>
@@ -236,21 +236,27 @@ function App() {
           </motion.section>
 
           {/* Skills Card */}
-          <motion.section className="card card-stacks" variants={itemVariants}>
+          <motion.section
+            className="card card-stacks"
+            variants={scrollVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-50px" }}
+          >
             <span className="card-label">Skills</span>
             <div className="skills-list">
-              {skills.map(skill => (
+              {skills.map((skill, index) => (
                 <div key={skill.name} className="skill-item">
                   <div className="skill-header">
                     <span className="skill-name">{skill.name}</span>
-                    <span className="skill-level">{skill.level}%</span>
                   </div>
                   <div className="skill-bar">
                     <motion.div
                       className="skill-progress"
                       initial={{ width: 0 }}
-                      animate={{ width: `${skill.level}%` }}
-                      transition={{ duration: 1, delay: 0.5 }}
+                      whileInView={{ width: `${skill.level}%` }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.8, delay: index * 0.1 }}
                     />
                   </div>
                 </div>
@@ -259,7 +265,13 @@ function App() {
           </motion.section>
 
           {/* Education Card */}
-          <motion.section className="card card-education" variants={itemVariants}>
+          <motion.section
+            className="card card-education"
+            variants={scrollVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-50px" }}
+          >
             <span className="card-label">Education</span>
             <div className="edu-list">
               <div className="edu-content">
@@ -277,14 +289,27 @@ function App() {
           </motion.section>
 
           {/* Certifications Card */}
-          <motion.section className="card card-certs" variants={itemVariants}>
+          <motion.section
+            className="card card-certs"
+            variants={scrollVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-50px" }}
+          >
             <span className="card-label">Certifications</span>
             <div className="certs-list">
               {certifications.map((cert, i) => (
-                <div key={i} className="cert-item">
+                <motion.div
+                  key={i}
+                  className="cert-item"
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.15 }}
+                >
                   <span className="cert-name">{cert.name}</span>
                   <span className="cert-meta">{cert.issuer} · {cert.year}</span>
-                </div>
+                </motion.div>
               ))}
             </div>
           </motion.section>
