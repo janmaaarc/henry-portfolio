@@ -163,7 +163,7 @@ function App() {
           <motion.section className="card card-profile" variants={itemVariants}>
             <div className="profile-left">
               <div className="avatar">
-                <span>H</span>
+                <img src="/image/Unknown.jpg" alt="Henry Rainier Zingapan" />
               </div>
               <div className="profile-info">
                 <h1>Henry Rainier Zingapan</h1>

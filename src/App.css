@@ -167,9 +167,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.875rem;
-  font-weight: 600;
-  letter-spacing: -0.02em;
   box-shadow:
     0 8px 32px rgba(0, 0, 0, 0.25),
     inset 0 2px 4px rgba(255, 255, 255, 0.25);
@@ -177,6 +174,14 @@
   position: relative;
   z-index: 1;
   animation: avatarPulse 2s ease-out 0.5s;
+  overflow: hidden;
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
 }
 
 @keyframes avatarPulse {
